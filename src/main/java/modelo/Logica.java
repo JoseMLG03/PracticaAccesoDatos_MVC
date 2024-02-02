@@ -9,7 +9,6 @@ import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
 public class Logica {
 	
-	
 	public static void main(String[] args) {
 		 // Crea una instancia de SessionFactory usando la configuración del archivo hibernate.cfg.xml
 	    SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
@@ -53,6 +52,5 @@ public class Logica {
 	        // Cierra la sesión de Hibernate
 	        session.close();
 	    }
-	
 	}
 }
