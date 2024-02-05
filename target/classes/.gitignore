@@ -1,5 +1,3 @@
-/controlador/
-/vista/
-/hibernate.cfg.xml
+/META-INF/
 /modelo/
-/Main.class
+/vista/
