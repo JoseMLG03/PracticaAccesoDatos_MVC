@@ -7,6 +7,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.cfg.Configuration;
+
+import jakarta.xml.bind.JAXBException;
 public class Logica {
 	
 	public static void main(String[] args) {

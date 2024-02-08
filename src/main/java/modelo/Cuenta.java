@@ -1,5 +1,6 @@
-package modelo;// default package
-// Generated 2 feb 2024 9:38:25 by Hibernate Tools 6.3.1.Final
+// default package
+package modelo;
+// Generated 8 feb 2024 13:26:13 by Hibernate Tools 6.3.1.Final
 
 import java.sql.Date;
 import java.util.HashSet;
