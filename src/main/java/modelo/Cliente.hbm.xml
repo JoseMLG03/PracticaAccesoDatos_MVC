@@ -1,27 +1,26 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 9 feb 2024 8:51:29 by Hibernate Tools 6.3.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
 <hibernate-mapping>
-    <class catalog="bancovigo" name="Cliente" optimistic-lock="none" table="cliente">
+    <class name="modelo.Cliente" table="cliente">
         <id name="clDni" type="string">
-            <column length="9" name="clDni"/>
-            <generator class="assigned"/>
+            <column name="cl_dni" length="20" />
+            <generator class="assigned" />
         </id>
         <property name="clNombre" type="string">
-            <column length="20" name="clNombre"/>
+            <column name="cl_nombre" length="50" />
         </property>
         <property name="clApellido" type="string">
-            <column length="50" name="clApellido"/>
+            <column name="cl_apellido" length="50" />
         </property>
-        <property name="clTelefono" type="java.lang.Integer">
-            <column name="clTelefono"/>
+        <property name="clTelefono" type="integer">
+            <column name="cl_telefono" />
         </property>
-        <set fetch="select" inverse="false" lazy="true" name="cuentas" table="cuentascliente">
+        <set name="cuentas" table="cuenta" cascade="all">
             <key>
-                <column length="9" name="ccDNI" not-null="true"/>
+                <column name="cliente_cl_dni" />
             </key>
-            <many-to-many entity-name="Cuenta">
-                <column name="ccCodCuenta" not-null="true"/>
-            </many-to-many>
+            <one-to-many class="modelo.Cuenta" />
         </set>
     </class>
 </hibernate-mapping>

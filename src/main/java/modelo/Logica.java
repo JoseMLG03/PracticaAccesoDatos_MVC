@@ -5,52 +5,41 @@ package modelo;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.hibernate.cfg.Configuration;
-import modelo.*;
-import vista.*;
 
 
 public class Logica {
     public static void main(String[] args) {
-        // Crea una instancia de SessionFactory usando la configuración del archivo hibernate.cfg.xml
-        SessionFactory sessionFactory = new Configuration().configure().buildSessionFactory();
-
-        // Abre una nueva sesión de Hibernate
+        // Obtenemos la sesión de Hibernate desde HibernateUtil
+        SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
         Session session = sessionFactory.openSession();
-
-        // Inicializa una transacción
-        Transaction transaction = null;
-
+        
+        // Creamos una instancia de Cliente y configuramos sus atributos
+        Cliente cliente = new Cliente();
+        cliente.setClDni("145678A");
+        cliente.setClNombre("Juoooooooan");
+        cliente.setClApellido("Pérez");
+        cliente.setClTelefono(123456789);
+        
+        // Iniciamos una transacción
+        Transaction tx = null;
         try {
-            // Inicia la transacción
-            transaction = session.beginTransaction();
-
-            // Crea y configura una entidad Cliente
-            Cliente cliente = new Cliente();
-            cliente.setClNombre("Jua11n");
-            cliente.setClApellido("Pér1ez");
-            cliente.setClDni("123456789");
-            cliente.setClTelefono(123456789);
-
-            // Guarda la entidad en la base de datos usando el método persist
+            tx = session.beginTransaction();
+            
+            // Guardamos el cliente en la base de datos
             session.persist(cliente);
-
-            // Compromete la transacción
-            transaction.commit();
-
-            System.out.println("Cliente insertado correctamente");
-
-        } catch (RuntimeException e) {
-            // Si ocurre una excepción durante la transacción, realiza un rollback
-            if (transaction != null) transaction.rollback();
-
-            // Imprime la excepción
+            
+            // Commit de la transacción
+            tx.commit();
+            System.out.println("Cliente guardado exitosamente en la base de datos.");
+        } catch (Exception e) {
+            // En caso de error, hacemos rollback de la transacción
+            if (tx != null) {
+                tx.rollback();
+            }
             e.printStackTrace();
-
         } finally {
-            // Cierra la sesión de Hibernate
+            // Cerramos la sesión de Hibernate
             session.close();
-            sessionFactory.close();
         }
     }
 }

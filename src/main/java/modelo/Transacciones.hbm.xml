@@ -1,22 +1,25 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Generated 9 feb 2024 8:51:29 by Hibernate Tools 6.3.1.Final --><!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+                                   "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<!-- Generated 9 feb 2024 10:31:16 by Hibernate Tools 6.3.1.Final -->
 <hibernate-mapping>
-    <class catalog="bancovigo" name="Transacciones" optimistic-lock="none" table="transacciones">
-        <id name="id" type="java.lang.Integer">
-            <column name="ID"/>
-            <generator class="identity"/>
-        </id>
-        <many-to-one class="Cuenta" fetch="select" name="cuenta">
-            <column name="trCodCuenta"/>
-        </many-to-one>
-        <property name="trFechaTransaccion" type="date">
-            <column length="10" name="trFechaTransaccion"/>
-        </property>
-        <property name="trTipo" type="java.lang.Character">
-            <column length="1" name="trTipo"/>
-        </property>
-        <property name="trCantidad" type="java.lang.Integer">
-            <column name="trCantidad"/>
-        </property>
-    </class>
+ <class catalog="bancovigo" name="modelo.Transacciones"
+  optimistic-lock="none" table="transacciones">
+  <id name="id" type="java.lang.Integer">
+   <column name="ID"/>
+   <generator class="identity"/>
+  </id>
+  <many-to-one class="Cuenta" fetch="select" name="cuenta">
+   <column name="trCodCuenta"/>
+  </many-to-one>
+  <property generated="never" lazy="false" name="trFechaTransaccion" type="date">
+   <column length="10" name="trFechaTransaccion"/>
+  </property>
+  <property generated="never" lazy="false" name="trTipo" type="java.lang.Character">
+   <column length="1" name="trTipo"/>
+  </property>
+  <property generated="never" lazy="false" name="trCantidad" type="java.lang.Integer">
+   <column name="trCantidad"/>
+  </property>
+ </class>
 </hibernate-mapping>
