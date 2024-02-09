@@ -1,7 +1,6 @@
 // default package
+// Generated 9 feb 2024 8:51:29 by Hibernate Tools 6.3.1.Final
 package modelo;
-// Generated 8 feb 2024 13:26:13 by Hibernate Tools 6.3.1.Final
-
 import java.sql.Date;
 
 /**
