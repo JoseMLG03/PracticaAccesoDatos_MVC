@@ -1,14 +1,21 @@
 package vista;
 
 import java.awt.EventQueue;
+import java.time.LocalDate;
+import java.util.stream.IntStream;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
+
+import controlador.Controlador;
+
 import javax.swing.JTextField;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class VentanaPrincipal extends JFrame {
 
@@ -16,7 +23,7 @@ public class VentanaPrincipal extends JFrame {
 	private JPanel contentPane;
 	private JTextField textField_N_Cuenta;
 	private JTextField textField_Saldo;
-
+	static VentanaPrincipal VentanaPrincipalframe = new VentanaPrincipal();
 	/**
 	 * Launch the application.
 	 */
@@ -24,8 +31,7 @@ public class VentanaPrincipal extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VentanaPrincipal frame = new VentanaPrincipal();
-					frame.setVisible(true);
+					VentanaPrincipalframe.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -37,8 +43,12 @@ public class VentanaPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaPrincipal() {
+		
+		Controlador controlador = new Controlador();
+		controlador.iniciar();
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 473, 288);
+		setBounds(100, 100, 540, 299);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -55,7 +65,7 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(lblN_Cuenta);
 		
 		JLabel lblCliente = new JLabel("Cliente:");
-		lblCliente.setBounds(38, 72, 46, 14);
+		lblCliente.setBounds(38, 72, 70, 14);
 		contentPane.add(lblCliente);
 		
 		JLabel lblFecha = new JLabel("Fecha:");
@@ -63,16 +73,16 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(lblFecha);
 		
 		JLabel lblSaldo = new JLabel("Saldo:");
-		lblSaldo.setBounds(279, 149, 46, 14);
+		lblSaldo.setBounds(345, 149, 46, 14);
 		contentPane.add(lblSaldo);
 		
 		textField_Saldo = new JTextField();
 		textField_Saldo.setColumns(10);
-		textField_Saldo.setBounds(335, 146, 86, 20);
+		textField_Saldo.setBounds(389, 147, 100, 20);
 		contentPane.add(textField_Saldo);
 		
 		JLabel lblSucursal = new JLabel("Sucursal:");
-		lblSucursal.setBounds(38, 109, 46, 14);
+		lblSucursal.setBounds(38, 109, 70, 14);
 		contentPane.add(lblSucursal);
 		
 		JButton btnNuevo = new JButton("Nuevo");
@@ -80,28 +90,45 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(btnNuevo);
 		
 		JButton btnActualizar = new JButton("Actualizar");
-		btnActualizar.setBounds(335, 177, 89, 23);
+		btnActualizar.setBounds(389, 177, 100, 23);
 		contentPane.add(btnActualizar);
 		
 		JButton btnListado = new JButton("Listado");
-		btnListado.setBounds(335, 211, 89, 23);
+		btnListado.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				VentanaListado frameVL = new VentanaListado();
+				frameVL.setVisible(true);
+				VentanaPrincipalframe.setVisible(false);
+			}
+		});
+		btnListado.setBounds(389, 211, 100, 23);
 		contentPane.add(btnListado);
 		
 		JButton btnEliminar = new JButton("Eliminar");
 		btnEliminar.setBounds(38, 209, 89, 23);
 		contentPane.add(btnEliminar);
 		
-		JComboBox comboBox_FechaDay = new JComboBox();
-		comboBox_FechaDay.setBounds(95, 146, 46, 22);
-		contentPane.add(comboBox_FechaDay);
-		
-		JComboBox comboBox_FechaMonth = new JComboBox();
-		comboBox_FechaMonth.setBounds(145, 146, 46, 22);
-		contentPane.add(comboBox_FechaMonth);
-		
-		JComboBox comboBox_FechaYear = new JComboBox();
-		comboBox_FechaYear.setBounds(195, 146, 46, 22);
-		contentPane.add(comboBox_FechaYear);
+		JComboBox<Integer> comboBox_FechaDay = new JComboBox<>();
+        comboBox_FechaDay.setBounds(95, 146, 46, 22);
+        IntStream.rangeClosed(1, 31).forEach(comboBox_FechaDay::addItem);
+        contentPane.add(comboBox_FechaDay);
+
+        JComboBox<String> comboBox_FechaMonth = new JComboBox<>();
+        comboBox_FechaMonth.setBounds(145, 146, 100, 22);
+        String[] meses = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
+                "Octubre", "Noviembre", "Diciembre" };
+        for (String mes : meses) {
+            comboBox_FechaMonth.addItem(mes);
+        }
+        contentPane.add(comboBox_FechaMonth);
+
+        JComboBox<Integer> comboBox_FechaYear = new JComboBox<>();
+        comboBox_FechaYear.setBounds(250, 146, 66, 22);
+        int currentYear = LocalDate.now().getYear();
+        IntStream.rangeClosed(1900, currentYear).forEach(comboBox_FechaYear::addItem);
+        contentPane.add(comboBox_FechaYear);
+
 		
 		JComboBox comboBox_Cliente = new JComboBox();
 		comboBox_Cliente.setBounds(135, 66, 286, 22);
