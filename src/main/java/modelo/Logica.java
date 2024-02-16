@@ -31,7 +31,7 @@ public class Logica {
 
             // Ejecutar la consulta
             ResultSet resultSet = statement.executeQuery();
-
+ 
             // Agregar los clientes al JComboBox
             while (resultSet.next()) {
                 comboBox.addItem(resultSet.getString("nombre"));
