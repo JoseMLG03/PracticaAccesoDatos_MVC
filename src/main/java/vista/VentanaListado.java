@@ -18,7 +18,7 @@ public class VentanaListado extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
-	static VentanaListado ventanaListado = new VentanaListado();
+	//static VentanaListado ventanaListado = new VentanaListado();
 	/**
 	 * Launch the application.
 	 */
@@ -27,7 +27,7 @@ public class VentanaListado extends JFrame {
 			public void run() {
 				try {
 					
-					//ventanaListado.setVisible(false);
+					//ventanaListado.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -70,13 +70,15 @@ public class VentanaListado extends JFrame {
 		JButton btn_Salir = new JButton("Salir");
 		btn_Salir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				ventanaListado.setVisible(false);
-				/*VentanaPrincipal frameVP = new VentanaPrincipal();
-				frameVP.setVisible(false);*/
-				
+				VentanaPrincipal VP = new VentanaPrincipal();
+				VentanaListado VL = VP.getVentanaListadoframe();
+				VL.setVisible(false);
+				VP.setVisible(true);
 			}
 		});
 		btn_Salir.setBounds(436, 58, 74, 23);
 		contentPane.add(btn_Salir);
+		
+		cargarClientes(comboBox);
 	}
 }

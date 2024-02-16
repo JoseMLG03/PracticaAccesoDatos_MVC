@@ -24,6 +24,8 @@ public class VentanaPrincipal extends JFrame {
 	private JTextField textField_N_Cuenta;
 	private JTextField textField_Saldo;
 	static VentanaPrincipal VentanaPrincipalframe = new VentanaPrincipal();
+	static VentanaListado ventanaListadoframe = new VentanaListado();
+	static VentanaTransaccion ventanaTransaccionFrame = new VentanaTransaccion();
 	/**
 	 * Launch the application.
 	 */
@@ -32,6 +34,7 @@ public class VentanaPrincipal extends JFrame {
 			public void run() {
 				try {
 					VentanaPrincipalframe.setVisible(true);
+					ventanaListadoframe.setVisible(false);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -96,16 +99,14 @@ public class VentanaPrincipal extends JFrame {
 		JButton btnListado = new JButton("Listado");
 		btnListado.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				
-				VentanaListado frameVL = new VentanaListado();
-				frameVL.setVisible(true);
+				ventanaListadoframe.setVisible(true);
 				VentanaPrincipalframe.setVisible(false);
 			}
 		});
 		btnListado.setBounds(389, 211, 100, 23);
 		contentPane.add(btnListado);
 		
-		JButton btnEliminar = new JButton("Eliminar");
+		JButton btnEliminar = new JButton("Eliminar ");
 		btnEliminar.setBounds(38, 209, 89, 23);
 		contentPane.add(btnEliminar);
 		
@@ -120,7 +121,7 @@ public class VentanaPrincipal extends JFrame {
                 "Octubre", "Noviembre", "Diciembre" };
         for (String mes : meses) {
             comboBox_FechaMonth.addItem(mes);
-        }
+        }	
         contentPane.add(comboBox_FechaMonth);
 
         JComboBox<Integer> comboBox_FechaYear = new JComboBox<>();
@@ -138,4 +139,22 @@ public class VentanaPrincipal extends JFrame {
 		comboBox_Sucursales.setBounds(135, 105, 286, 22);
 		contentPane.add(comboBox_Sucursales);
 	}
+
+	public static VentanaListado getVentanaListadoframe() {
+		return ventanaListadoframe;
+	}
+
+	public static void setVentanaListadoframe(VentanaListado ventanaListadoframe) {
+		VentanaPrincipal.ventanaListadoframe = ventanaListadoframe;
+	}
+
+	public static VentanaTransaccion getVentanaTransaccionFrame() {
+		return ventanaTransaccionFrame;
+	}
+
+	public static void setVentanaTransaccionFrame(VentanaTransaccion ventanaTransaccionFrame) {
+		VentanaPrincipal.ventanaTransaccionFrame = ventanaTransaccionFrame;
+	}
+	
+	
 }
