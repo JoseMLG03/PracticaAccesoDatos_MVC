@@ -19,7 +19,10 @@ import java.awt.event.ActionListener;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Vector;
 import java.awt.event.ActionEvent;
 import javax.swing.JTable;
 
@@ -65,17 +68,9 @@ public class VentanaListado extends JFrame {
 		
 		
 		
-		JComboBox<String> comboBox = new JComboBox<>();
-	    comboBox.setBounds(154, 58, 260, 22);
-	    contentPane.add(comboBox);
+		
 
-	    cargarClientes(comboBox); // Llama a cargarClientes antes de configurar el ActionListener
-
-	    // Configurar ActionListener después de cargar los clientes
-	    comboBox.addActionListener(e -> {
-	        String clienteSeleccionado = (String) comboBox.getSelectedItem();
-	        listarCuentasCliente(clienteSeleccionado);
-	    });
+	    
 		JLabel lblNewLabel_1 = new JLabel("Seleccionar Cliente:");
 		lblNewLabel_1.setBounds(30, 62, 114, 14);
 		contentPane.add(lblNewLabel_1);
@@ -93,21 +88,27 @@ public class VentanaListado extends JFrame {
 		});
 		btn_Salir.setBounds(436, 58, 74, 23);
 		contentPane.add(btn_Salir);
-		
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setBounds(10, 99, 502, 260);
+
+        
+
+        JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setBounds(10, 91, 500, 239);
 		contentPane.add(scrollPane);
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
-		String[] columnNames = {"Código de Sucursal", "Fecha de Creación", "Saldo"};
-        tableModel = new DefaultTableModel(columnNames, 0);
-        table.setModel(tableModel); 
-        
-        
+		comboBox = new JComboBox<>();
+	    comboBox.setBounds(154, 58, 260, 22);
+	    contentPane.add(comboBox);
+	    cargarClientes(comboBox);
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				listarCuentas(comboBox.getSelectedItem().toString());
+			}
+		});
 	}																																																																	
 	
-	void cargarClientes(JComboBox<String> comboBox) {
+	public void cargarClientes(JComboBox<String> comboBox) {
 	    try {
 	        modelo.ConexionBD CBD = new modelo.ConexionBD("localhost", "3306", "root", "", "bancoVigo");
 	        
@@ -135,37 +136,49 @@ public class VentanaListado extends JFrame {
 	        e.printStackTrace();
 	    }
 	}
-	
-	private void listarCuentasCliente(String clienteSeleccionado) {
-        try {
-            ConexionBD CBD = new ConexionBD("localhost", "3306", "root", "", "bancoVigo");
-            Connection conn = CBD.getCon();
-            String query = "SELECT c.cuCodCuenta, c.cuCodSucursal, s.suCiudad, c.cuSaldo " +
-                    "FROM cuentascliente cc " +
-                    "INNER JOIN cuenta c ON cc.ccCodCuenta = c.cuCodCuenta " +
-                    "INNER JOIN sucursales s ON c.cuCodSucursal = s.suCodSucursal " +
-                    "WHERE cc.ccDNI = ?";
-            PreparedStatement statement = conn.prepareStatement(query);
-            statement.setString(1, clienteSeleccionado);
-            ResultSet resultSet = statement.executeQuery();
+	public void listarCuentas(String nombreCliente) {
+	    try {
+	        modelo.ConexionBD CBD = new modelo.ConexionBD("localhost", "3306", "root", "", "bancoVigo");
+	        Connection con = CBD.getCon();
 
-            tableModel.setRowCount(0);
-            while (resultSet.next()) {
-                String numCuenta = resultSet.getString("cuCodCuenta");
-                String numSucursal = resultSet.getString("cuCodSucursal");
-                String ciudad = resultSet.getString("suCiudad");
-                String saldo = resultSet.getString("cuSaldo");
-                tableModel.addRow(new Object[]{numCuenta, numSucursal, ciudad, saldo});
-            }
+	        String query = "SELECT cuCodCuenta, cuCodSucursal, cuFechaCreacion, CuSaldo " +
+	                       "FROM cuenta " +
+	                       "JOIN cuentascliente ON cuenta.cuCodCuenta = cuentascliente.ccCodCuenta " +
+	                       "JOIN cliente ON cuentascliente.ccDNI = cliente.clDni " +
+	                       "WHERE cliente.clNombre = ?";
 
-            resultSet.close();
-            statement.close();
-            conn.close();
+	        PreparedStatement preparedStatement = con.prepareStatement(query);
+	        preparedStatement.setString(1, nombreCliente); 
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+	        ResultSet rs = preparedStatement.executeQuery();
+	        ResultSetMetaData rsmd = rs.getMetaData();
+
+	        tableModel = new DefaultTableModel();
+
+	        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+	            tableModel.addColumn(rsmd.getColumnName(i));
+	        }
+
+	        while (rs.next()) {
+	            Object[] rowData = new Object[rsmd.getColumnCount()];
+	            for (int i = 1; i <= rsmd.getColumnCount(); i++) {
+	                try {
+	                    rowData[i - 1] = rs.getObject(i);
+	                } catch (Exception e1) {
+	                    e1.printStackTrace();
+	                }
+	            }
+
+	            tableModel.addRow(rowData);
+	        }
+
+	        table.setModel(tableModel);
+	        tableModel.fireTableDataChanged();
+
+	    } catch (SQLException e1) {
+	        e1.printStackTrace();
+	    }
+	}
 }
 
 
