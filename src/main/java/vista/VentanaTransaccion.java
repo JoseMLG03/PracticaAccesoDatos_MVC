@@ -10,6 +10,9 @@ import javax.swing.SwingConstants;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 import javax.swing.JComboBox;
+import javax.swing.JButton;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 
 public class VentanaTransaccion extends JFrame {
 
@@ -24,8 +27,8 @@ public class VentanaTransaccion extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					VentanaTransaccion frame = new VentanaTransaccion();
-					frame.setVisible(true);
+					//VentanaTransaccion frame = new VentanaTransaccion();
+					//frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -72,11 +75,11 @@ public class VentanaTransaccion extends JFrame {
 		contentPane.add(lblNewLabel_1);
 		
 		JLabel lblNewLabel_2 = new JLabel("Seleccionar Cuenta Cliente:");
-		lblNewLabel_2.setBounds(192, 116, 149, 14);
+		lblNewLabel_2.setBounds(192, 116, 171, 14);
 		contentPane.add(lblNewLabel_2);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(345, 112, 162, 22);
+		comboBox.setBounds(350, 112, 157, 22);
 		contentPane.add(comboBox);
 		
 		JLabel lblNewLabel_3 = new JLabel("Cantidad:");
@@ -94,5 +97,19 @@ public class VentanaTransaccion extends JFrame {
 		JComboBox comboBox_2 = new JComboBox();
 		comboBox_2.setBounds(224, 231, 254, 22);
 		contentPane.add(comboBox_2);
+		
+		JButton btnSalir = new JButton("Salir");
+		btnSalir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaPrincipal VP = new VentanaPrincipal();
+				
+				VentanaPrincipal vp = VP.getVentanaPrincipalframe();
+				VentanaTransaccion VT = VP.getVentanaTransaccionFrame();
+				VT.setVisible(false);
+				vp.setVisible(true);
+			}
+		});
+		btnSalir.setBounds(418, 16, 89, 23);
+		contentPane.add(btnSalir);
 	}
 }

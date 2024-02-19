@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.awt.event.ActionEvent;
 
 public class VentanaPrincipal extends JFrame {
@@ -35,6 +36,10 @@ public class VentanaPrincipal extends JFrame {
 	static VentanaTransaccion ventanaTransaccionFrame = new VentanaTransaccion();
 	public JOptionPane joptionpane;
 	JComboBox comboBox_Sucursales;
+	JComboBox comboBox_Cliente;
+	JComboBox<Integer> comboBox_FechaYear;
+	JComboBox<Integer> comboBox_FechaDay;
+	JComboBox<String> comboBox_FechaMonth;
 	/**
 	 * Launch the application.
 	 */
@@ -106,11 +111,11 @@ public class VentanaPrincipal extends JFrame {
 				
 			}
 		});
-		btnNuevo.setBounds(38, 175, 89, 23);
+		btnNuevo.setBounds(38, 175, 103, 15);
 		contentPane.add(btnNuevo);
 		
 		JButton btnActualizar = new JButton("Actualizar");
-		btnActualizar.setBounds(389, 177, 100, 23);
+		btnActualizar.setBounds(38, 226, 103, 15);
 		contentPane.add(btnActualizar);
 		
 		JButton btnListado = new JButton("Listado");
@@ -121,19 +126,29 @@ public class VentanaPrincipal extends JFrame {
 				
 			}
 		});
-		btnListado.setBounds(389, 211, 100, 23);
+		btnListado.setBounds(366, 211, 123, 23);
 		contentPane.add(btnListado);
 		
 		JButton btnEliminar = new JButton("Eliminar ");
-		btnEliminar.setBounds(38, 209, 89, 23);
+		btnEliminar.setBounds(38, 200, 103, 15);
 		contentPane.add(btnEliminar);
+
+		JButton btnTransaccion = new JButton("Transaccion");
+		btnTransaccion.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				VentanaPrincipalframe.setVisible(false);
+				ventanaTransaccionFrame.setVisible(true);
+			}
+		});
+		btnTransaccion.setBounds(366, 174, 123, 23);
+		contentPane.add(btnTransaccion);
 		
-		JComboBox<Integer> comboBox_FechaDay = new JComboBox<>();
+		comboBox_FechaDay = new JComboBox<>();
         comboBox_FechaDay.setBounds(95, 146, 46, 22);
         IntStream.rangeClosed(1, 31).forEach(comboBox_FechaDay::addItem);
         contentPane.add(comboBox_FechaDay);
 
-        JComboBox<String> comboBox_FechaMonth = new JComboBox<>();
+        comboBox_FechaMonth = new JComboBox<>();
         comboBox_FechaMonth.setBounds(145, 146, 100, 22);
         String[] meses = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre",
                 "Octubre", "Noviembre", "Diciembre" };
@@ -142,14 +157,14 @@ public class VentanaPrincipal extends JFrame {
         }	
         contentPane.add(comboBox_FechaMonth);
 
-        JComboBox<Integer> comboBox_FechaYear = new JComboBox<>();
+        comboBox_FechaYear = new JComboBox<>();
         comboBox_FechaYear.setBounds(250, 146, 66, 22);
         int currentYear = LocalDate.now().getYear();
         IntStream.rangeClosed(1900, currentYear).forEach(comboBox_FechaYear::addItem);
         contentPane.add(comboBox_FechaYear);
 
 		
-		JComboBox comboBox_Cliente = new JComboBox();
+		comboBox_Cliente = new JComboBox();
 		comboBox_Cliente.setBounds(135, 66, 286, 22);
 		contentPane.add(comboBox_Cliente);
 		
@@ -225,61 +240,127 @@ public class VentanaPrincipal extends JFrame {
     }
     
     private void agregarNuevaCuenta() {
-    try {
-        // Obtener los datos de los campos de texto
-        String numeroCuenta = textField_N_Cuenta.getText();
-        String sucursalNombre = comboBox_Sucursales.getSelectedItem().toString();
-        String saldo = textField_Saldo.getText();
+        try {
+            // Obtener los datos de los campos de texto y los combo box de fecha
+            String numeroCuenta = textField_N_Cuenta.getText();
+            String sucursalNombre = comboBox_Sucursales.getSelectedItem().toString();
+            String saldo = textField_Saldo.getText();
+            String clienteNombre = comboBox_Cliente.getSelectedItem().toString();
+            int dia = (int) comboBox_FechaDay.getSelectedItem();
+            String mes = (String) comboBox_FechaMonth.getSelectedItem();
+            int año = (int) comboBox_FechaYear.getSelectedItem();
 
-        // Validar que todos los campos estén completos
-        if (numeroCuenta.isEmpty() || sucursalNombre.isEmpty() || saldo.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            // Validar que todos los campos estén completos
+            if (numeroCuenta.isEmpty() || sucursalNombre.isEmpty() || saldo.isEmpty() || clienteNombre.isEmpty()) {
+                JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Conectar a la base de datos
+            modelo.ConexionBD CBD = new modelo.ConexionBD("localhost", "3306", "root", "", "bancoVigo");
+            Connection conn = CBD.getCon();
+
+            // Obtener el código de la sucursal
+            String query = "SELECT suCodSucursal FROM sucursales WHERE suCiudad = ?";
+            PreparedStatement statement = conn.prepareStatement(query);
+            statement.setString(1, sucursalNombre);
+            ResultSet resultSet = statement.executeQuery();
+
+            int sucursalCodigo = 0;
+            if (resultSet.next()) {
+                sucursalCodigo = resultSet.getInt("suCodSucursal");
+            } else {
+                JOptionPane.showMessageDialog(this, "La sucursal seleccionada no existe.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            // Formar la fecha de creación en el formato adecuado para MySQL
+            String fechaCreacion = String.format("%04d-%02d-%02d", año, obtenerNumeroMes(mes), dia);
+
+            // Insertar la nueva cuenta en la tabla cuenta
+            String insertQuery = "INSERT INTO cuenta (cuCodSucursal, cuFechaCreacion, CuSaldo) VALUES (?, ?, ?)";
+            PreparedStatement insertStatement = conn.prepareStatement(insertQuery, Statement.RETURN_GENERATED_KEYS);
+            insertStatement.setInt(1, sucursalCodigo);
+            insertStatement.setString(2, fechaCreacion);
+            insertStatement.setString(3, saldo);
+            int rowsAffected = insertStatement.executeUpdate();
+
+            // Verificar si se insertó correctamente
+            if (rowsAffected > 0) {
+                // Obtener el ID generado para la nueva cuenta
+                ResultSet generatedKeys = insertStatement.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    int nuevaCuentaID = generatedKeys.getInt(1);
+                    // Obtener el DNI del cliente seleccionado
+                    String dniClienteQuery = "SELECT clDni FROM cliente WHERE clNombre = ?";
+                    PreparedStatement dniStatement = conn.prepareStatement(dniClienteQuery);
+                    dniStatement.setString(1, clienteNombre);
+                    ResultSet dniResultSet = dniStatement.executeQuery();
+                    String dniCliente = "";
+                    if (dniResultSet.next()) {
+                        dniCliente = dniResultSet.getString("clDni");
+                        // Insertar el DNI del cliente y el ID de la nueva cuenta en la tabla cuentascliente
+                        String cuentasClienteQuery = "INSERT INTO cuentascliente (ccDNI, ccCodCuenta) VALUES (?, ?)";
+                        PreparedStatement cuentasClienteStatement = conn.prepareStatement(cuentasClienteQuery);
+                        cuentasClienteStatement.setString(1, dniCliente);
+                        cuentasClienteStatement.setInt(2, nuevaCuentaID);
+                        cuentasClienteStatement.executeUpdate();
+                        JOptionPane.showMessageDialog(this, "Se agregó correctamente la nueva cuenta.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(this, "No se pudo obtener el DNI del cliente seleccionado.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+                    dniResultSet.close();
+                    dniStatement.close();
+                } else {
+                    JOptionPane.showMessageDialog(this, "No se pudo obtener el ID de la nueva cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+                generatedKeys.close();
+            } else {
+                JOptionPane.showMessageDialog(this, "No se pudo agregar la nueva cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
+            }
+
+            // Cerrar la conexión y las declaraciones
+            resultSet.close();
+            statement.close();
+            insertStatement.close();
+            conn.close();
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al agregar la nueva cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-
-        // Conectar a la base de datos
-        modelo.ConexionBD CBD = new modelo.ConexionBD("localhost", "3306", "root", "", "bancoVigo");
-        Connection conn = CBD.getCon();
-
-        // Obtener el código de la sucursal
-        String query = "SELECT suCodSucursal FROM sucursales WHERE suCiudad = ?";
-        PreparedStatement statement = conn.prepareStatement(query);
-        statement.setString(1, sucursalNombre);
-        ResultSet resultSet = statement.executeQuery();
-
-        int sucursalCodigo = 0;
-        if (resultSet.next()) {
-            sucursalCodigo = resultSet.getInt("suCodSucursal");
-        } else {
-            JOptionPane.showMessageDialog(this, "La sucursal seleccionada no existe.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
-
-        // Insertar la nueva cuenta en la tabla cuenta
-        String insertQuery = "INSERT INTO cuenta (cuCodSucursal, cuFechaCreacion, CuSaldo) VALUES (?, CURDATE(), ?)";
-        PreparedStatement insertStatement = conn.prepareStatement(insertQuery);
-        insertStatement.setInt(1, sucursalCodigo);
-        insertStatement.setString(2, saldo);
-        int rowsAffected = insertStatement.executeUpdate();
-
-        // Verificar si se insertó correctamente
-        if (rowsAffected > 0) {
-            JOptionPane.showMessageDialog(this, "Se agregó correctamente la nueva cuenta.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(this, "No se pudo agregar la nueva cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-
-        // Cerrar la conexión y las declaraciones
-        resultSet.close();
-        statement.close();
-        insertStatement.close();
-        conn.close();
-
-    } catch (SQLException e) {
-        e.printStackTrace();
-        JOptionPane.showMessageDialog(this, "Error al agregar la nueva cuenta.", "Error", JOptionPane.ERROR_MESSAGE);
     }
-}
+    
+    private int obtenerNumeroMes(String nombreMes) {
+        switch (nombreMes) {
+            case "Enero":
+                return 1;
+            case "Febrero":
+                return 2;
+            case "Marzo":
+                return 3;
+            case "Abril":
+                return 4;
+            case "Mayo":
+                return 5;
+            case "Junio":
+                return 6;
+            case "Julio":
+                return 7;
+            case "Agosto":
+                return 8;
+            case "Septiembre":
+                return 9;
+            case "Octubre":
+                return 10;
+            case "Noviembre":
+                return 11;
+            case "Diciembre":
+                return 12;
+            default:
+                return 1; // Por defecto, retornar enero en caso de error
+        }
+    }
 
 	public static VentanaListado getVentanaListadoframe() {
 		return ventanaListadoframe;
@@ -304,7 +385,4 @@ public class VentanaPrincipal extends JFrame {
 	public static void setVentanaPrincipalframe(VentanaPrincipal ventanaPrincipalframe) {
 		VentanaPrincipalframe = ventanaPrincipalframe;
 	}
-	
-	
-	
 }

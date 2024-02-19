@@ -97,6 +97,7 @@ public class VentanaListado extends JFrame {
 		
 		table = new JTable();
 		scrollPane.setViewportView(table);
+		
 		comboBox = new JComboBox<>();
 	    comboBox.setBounds(154, 58, 260, 22);
 	    contentPane.add(comboBox);
