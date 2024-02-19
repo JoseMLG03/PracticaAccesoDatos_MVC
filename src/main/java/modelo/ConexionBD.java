@@ -10,14 +10,14 @@ public class ConexionBD {
 	
 	private Connection con;
 	
-	public ConexionBD( String host, String port, String user, String pswd) {
+	public ConexionBD( String host, String port, String user, String pswd,String Database) {
 		super();
-		this.con = conectar(host,port,user,pswd);
+		this.con = conectar(host,port,user,pswd,Database);
 	}
-	private Connection conectar(String host,String port,String user,String pswd) {
+	private Connection conectar(String host,String port,String user,String pswd,String Database) {
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver");
-			String URL="jdbc:mysql://"+host+": "+port;
+			String URL="jdbc:mysql://"+host+": "+port+"/"+Database;
 			Connection con1 = DriverManager.getConnection(URL,user,pswd);
 			//JOptionPane.showMessageDialog(null, "Conexion Establecida");
 			return con1;

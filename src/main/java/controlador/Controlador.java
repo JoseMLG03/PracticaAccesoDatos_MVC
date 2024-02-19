@@ -1,17 +1,20 @@
 package controlador;
 
 import modelo.ConexionBD;
+import modelo.Logica;
 import vista.VentanaPrincipal;
 
 public class Controlador {
 	private VentanaPrincipal vista;
-    private ConexionBD modelo;
+    private ConexionBD modeloConexionBD;
+    private Logica  logica;
     
     public void iniciar() {
         //vista.setVisible(true);
     }
     
     public Controlador() {
-        this.modelo = new ConexionBD("localhost", "3306", "root", "");//Conexion
+        this.modeloConexionBD = new ConexionBD("localhost", "3306", "root", "","bancovigo");//Conexion
     }
+    
 }
