@@ -13,6 +13,7 @@ import javax.swing.JComboBox;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import javax.swing.border.TitledBorder;
 
 public class VentanaTransaccion extends JFrame {
 
@@ -53,41 +54,45 @@ public class VentanaTransaccion extends JFrame {
 		lblNewLabel.setBounds(222, 11, 103, 33);
 		contentPane.add(lblNewLabel);
 		
+		JPanel panel = new JPanel();
+		panel.setBorder(new TitledBorder(null, "JPanel title", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBounds(61, 50, 417, 45);
+		contentPane.add(panel);
+		panel.setLayout(null);
+		
 		JRadioButton rdbtnNewRadioButton = new JRadioButton("New radio button");
-		rdbtnNewRadioButton.setBounds(222, 51, 109, 23);
-		contentPane.add(rdbtnNewRadioButton);
+		rdbtnNewRadioButton.setBounds(155, 16, 109, 23);
+		panel.add(rdbtnNewRadioButton);
 		
 		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("New radio button");
-		rdbtnNewRadioButton_1.setBounds(73, 51, 109, 23);
-		contentPane.add(rdbtnNewRadioButton_1);
+		rdbtnNewRadioButton_1.setBounds(6, 16, 109, 23);
+		panel.add(rdbtnNewRadioButton_1);
 		
 		JRadioButton rdbtnNewRadioButton_2 = new JRadioButton("New radio button");
-		rdbtnNewRadioButton_2.setBounds(369, 51, 109, 23);
-		contentPane.add(rdbtnNewRadioButton_2);
+		rdbtnNewRadioButton_2.setBounds(302, 16, 109, 23);
+		panel.add(rdbtnNewRadioButton_2);
+		
+		
 		
 		textField = new JTextField();
-		textField.setBounds(73, 113, 109, 20);
-		contentPane.add(textField);
+		textField.setBounds(37, 17, 109, 20);
 		textField.setColumns(10);
 		
 		JLabel lblNewLabel_1 = new JLabel("DNI:");
-		lblNewLabel_1.setBounds(42, 116, 38, 14);
-		contentPane.add(lblNewLabel_1);
+		lblNewLabel_1.setBounds(6, 20, 38, 14);
 		
-		JLabel lblNewLabel_2 = new JLabel("Seleccionar Cuenta Cliente:");
-		lblNewLabel_2.setBounds(192, 116, 171, 14);
-		contentPane.add(lblNewLabel_2);
+		JLabel lblNewLabel_2 = new JLabel("Seleccionar Cuenta:");
+		lblNewLabel_2.setBounds(156, 20, 109, 14);
 		
 		JComboBox comboBox = new JComboBox();
-		comboBox.setBounds(350, 112, 157, 22);
-		contentPane.add(comboBox);
+		comboBox.setBounds(255, 16, 157, 22);
 		
 		JLabel lblNewLabel_3 = new JLabel("Cantidad:");
-		lblNewLabel_3.setBounds(24, 156, 59, 14);
+		lblNewLabel_3.setBounds(332, 155, 59, 14);
 		contentPane.add(lblNewLabel_3);
 		
 		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(90, 152, 109, 22);
+		comboBox_1.setBounds(398, 151, 109, 22);
 		contentPane.add(comboBox_1);
 		
 		JLabel lblNewLabel_4 = new JLabel("Seleccionar Cuenta Destinatario:");
