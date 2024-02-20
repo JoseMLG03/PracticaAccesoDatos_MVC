@@ -277,5 +277,63 @@ public class VentanaTransaccion extends JFrame {
 	        JOptionPane.showMessageDialog(this, "Error al realizar el ingreso.", "Error", JOptionPane.ERROR_MESSAGE);
 	    }
 	}
-	
+	private void realizarReintegro(JComboBox comboBox, JTextField DNI, JTextField Saldo) {
+	    try {
+	        // Obtener los valores ingresados en los campos
+	        String dniCliente = DNI.getText();
+	        double cantidad = Double.parseDouble(Saldo.getText());
+	        String cuentaDestino = comboBox.getSelectedItem().toString();
+
+	        // Validar que todos los campos estén completos
+	        if (dniCliente.isEmpty() || Saldo.getText().isEmpty() || cuentaDestino.isEmpty()) {
+	            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+
+	        // Conectar a la base de datos
+	        ConexionBD CBD = new ConexionBD("localhost", "3306", "root", "", "bancoVigo");
+	        Connection conn = CBD.getCon();
+
+	        // Obtener el ID de la cuenta destino
+	        String[] parts = cuentaDestino.split(" ");
+	        int cuentaDestinoID = Integer.parseInt(parts[2]);
+
+	        // Verificar si hay suficiente saldo en la cuenta
+	        String saldoQuery = "SELECT CuSaldo FROM cuenta WHERE cuCodCuenta = ?";
+	        PreparedStatement saldoStatement = conn.prepareStatement(saldoQuery);
+	        saldoStatement.setInt(1, cuentaDestinoID);
+	        ResultSet saldoResult = saldoStatement.executeQuery();
+	        saldoResult.next();
+	        double saldoActual = saldoResult.getDouble("CuSaldo");
+	        if (saldoActual < cantidad) {
+	            JOptionPane.showMessageDialog(this, "La cuenta no tiene suficiente saldo para realizar esta transacción.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+
+	        // Actualizar el saldo en la base de datos
+	        String updateQuery = "UPDATE cuenta SET CuSaldo = CuSaldo - ? WHERE cuCodCuenta = ?";
+	        PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
+	        updateStatement.setDouble(1, cantidad);
+	        updateStatement.setInt(2, cuentaDestinoID);
+	        int rowsAffected = updateStatement.executeUpdate();
+
+	        // Verificar si se actualizó correctamente
+	        if (rowsAffected > 0) {
+	            JOptionPane.showMessageDialog(this, "Se ha realizado el retiro correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	            // Actualizar la lista del JComboBox
+	            cuentasySaldo(comboBox);
+	        } else {
+	            JOptionPane.showMessageDialog(this, "No se pudo realizar el retiro.", "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+
+	        // Cerrar la conexión y las declaraciones
+	        saldoStatement.close();
+	        updateStatement.close();
+	        conn.close();
+	    } catch (SQLException | NumberFormatException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(this, "Error al realizar el retiro.", "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+
 }
