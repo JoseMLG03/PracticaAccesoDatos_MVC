@@ -28,10 +28,6 @@ import javax.swing.JTable;
 
 public class VentanaListado extends JFrame {
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTable table;
-	private DefaultTableModel tableModel;
-	JComboBox comboBox;
 	//static VentanaListado ventanaListado = new VentanaListado();
 	/**
 	 * Launch the application.
@@ -55,7 +51,7 @@ public class VentanaListado extends JFrame {
 	public VentanaListado() {
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 536, 396);
-		contentPane = new JPanel();
+		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
@@ -95,16 +91,18 @@ public class VentanaListado extends JFrame {
 		scrollPane.setBounds(10, 91, 500, 239);
 		contentPane.add(scrollPane);
 		
-		table = new JTable();
+		JTable table = new JTable();
 		scrollPane.setViewportView(table);
 		
-		comboBox = new JComboBox<>();
+		JComboBox comboBox = new JComboBox<>();
 	    comboBox.setBounds(154, 58, 260, 22);
 	    contentPane.add(comboBox);
+	    
 	    cargarClientes(comboBox);
+	    
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				listarCuentas(comboBox.getSelectedItem().toString());
+				listarCuentas(comboBox.getSelectedItem().toString(),table);
 			}
 		});
 	}																																																																	
@@ -137,7 +135,7 @@ public class VentanaListado extends JFrame {
 	        e.printStackTrace();
 	    }
 	}
-	public void listarCuentas(String nombreCliente) {
+	public void listarCuentas(String nombreCliente,JTable table) {
 	    try {
 	        modelo.ConexionBD CBD = new modelo.ConexionBD("localhost", "3306", "root", "", "bancoVigo");
 	        Connection con = CBD.getCon();
@@ -154,7 +152,7 @@ public class VentanaListado extends JFrame {
 	        ResultSet rs = preparedStatement.executeQuery();
 	        ResultSetMetaData rsmd = rs.getMetaData();
 
-	        tableModel = new DefaultTableModel();
+	        DefaultTableModel tableModel = new DefaultTableModel();
 
 	        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
 	            tableModel.addColumn(rsmd.getColumnName(i));

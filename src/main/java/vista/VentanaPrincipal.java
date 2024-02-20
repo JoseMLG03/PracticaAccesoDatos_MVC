@@ -28,7 +28,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
 
 public class VentanaPrincipal extends JFrame {
-
 	private static final long serialVersionUID = 1L;
 	static VentanaPrincipal VentanaPrincipalframe = new VentanaPrincipal();
 	static VentanaListado ventanaListadoframe = new VentanaListado();
@@ -80,28 +79,28 @@ public class VentanaPrincipal extends JFrame {
 		textField_N_Cuenta.setColumns(10);
 		
 		JLabel lblN_Cuenta = new JLabel("N de cuenta:");
-		lblN_Cuenta.setBounds(6, 22, 87, 14);
+		lblN_Cuenta.setBounds(10, 21, 87, 14);
 		panel.add(lblN_Cuenta);
 		
 		JLabel lblCliente = new JLabel("Cliente:");
-		lblCliente.setBounds(6, 53, 70, 14);
+		lblCliente.setBounds(10, 52, 70, 14);
 		panel.add(lblCliente);
 		
 		JLabel lblFecha = new JLabel("Fecha:");
-		lblFecha.setBounds(6, 131, 46, 14);
+		lblFecha.setBounds(10, 130, 46, 14);
 		panel.add(lblFecha);
 		
 		JLabel lblSaldo = new JLabel("Saldo:");
-		lblSaldo.setBounds(313, 130, 46, 14);
+		lblSaldo.setBounds(294, 132, 46, 14);
 		panel.add(lblSaldo);
 		
 		JTextField textField_Saldo = new JTextField();
-		textField_Saldo.setBounds(357, 128, 100, 20);
+		textField_Saldo.setBounds(338, 130, 100, 20);
 		panel.add(textField_Saldo);
 		textField_Saldo.setColumns(10);
 		
 		JLabel lblSucursal = new JLabel("Sucursal:");
-		lblSucursal.setBounds(6, 90, 70, 14);
+		lblSucursal.setBounds(10, 89, 70, 14);
 		panel.add(lblSucursal);
 		
 		JComboBox<Integer> comboBox_FechaDay = new JComboBox<>();
