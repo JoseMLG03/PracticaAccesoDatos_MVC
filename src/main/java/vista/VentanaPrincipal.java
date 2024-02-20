@@ -1,6 +1,7 @@
 package vista;
 
 import java.awt.EventQueue;
+import java.awt.TextField;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,18 +30,10 @@ import javax.swing.border.TitledBorder;
 public class VentanaPrincipal extends JFrame {
 
 	private static final long serialVersionUID = 1L;
-	private JPanel contentPane;
-	private JTextField textField_N_Cuenta;
-	private JTextField textField_Saldo;
 	static VentanaPrincipal VentanaPrincipalframe = new VentanaPrincipal();
 	static VentanaListado ventanaListadoframe = new VentanaListado();
 	static VentanaTransaccion ventanaTransaccionFrame = new VentanaTransaccion();
-	public JOptionPane joptionpane;
-	JComboBox comboBox_Sucursales;
-	JComboBox comboBox_Cliente;
-	JComboBox<Integer> comboBox_FechaYear;
-	JComboBox<Integer> comboBox_FechaDay;
-	JComboBox<String> comboBox_FechaMonth;
+	
 	/**
 	 * Launch the application.
 	 */
@@ -62,13 +55,14 @@ public class VentanaPrincipal extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaPrincipal() {
+		JOptionPane joptionpane = null;
 		
 		Controlador controlador = new Controlador();
 		controlador.iniciar();
 		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 540, 299);
-		contentPane = new JPanel();
+		JPanel contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		setContentPane(contentPane);
@@ -80,7 +74,7 @@ public class VentanaPrincipal extends JFrame {
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		textField_N_Cuenta = new JTextField();
+		JTextField textField_N_Cuenta = new JTextField();
 		textField_N_Cuenta.setBounds(103, 16, 286, 20);
 		panel.add(textField_N_Cuenta);
 		textField_N_Cuenta.setColumns(10);
@@ -101,7 +95,7 @@ public class VentanaPrincipal extends JFrame {
 		lblSaldo.setBounds(313, 130, 46, 14);
 		panel.add(lblSaldo);
 		
-		textField_Saldo = new JTextField();
+		JTextField textField_Saldo = new JTextField();
 		textField_Saldo.setBounds(357, 128, 100, 20);
 		panel.add(textField_Saldo);
 		textField_Saldo.setColumns(10);
@@ -110,26 +104,26 @@ public class VentanaPrincipal extends JFrame {
 		lblSucursal.setBounds(6, 90, 70, 14);
 		panel.add(lblSucursal);
 		
-		comboBox_FechaDay = new JComboBox<>();
+		JComboBox<Integer> comboBox_FechaDay = new JComboBox<>();
 		comboBox_FechaDay.setBounds(63, 127, 46, 22);
 		panel.add(comboBox_FechaDay);
 		
-		comboBox_FechaMonth = new JComboBox<>();
+		JComboBox<String> comboBox_FechaMonth = new JComboBox<>();
 		comboBox_FechaMonth.setBounds(113, 127, 100, 22);
 		panel.add(comboBox_FechaMonth);
 		        
-		comboBox_FechaYear = new JComboBox<>();
+		JComboBox<Integer> comboBox_FechaYear = new JComboBox<>();
 		comboBox_FechaYear.setBounds(218, 127, 66, 22);
 		panel.add(comboBox_FechaYear);
 		                
 		                		
-		comboBox_Cliente = new JComboBox();
+		JComboBox comboBox_Cliente = new JComboBox();
 		comboBox_Cliente.setBounds(103, 47, 286, 22);
 		panel.add(comboBox_Cliente);
 		                		
 		cargarClientesEnComboBox(comboBox_Cliente);
 		                		 
-		comboBox_Sucursales = new JComboBox();
+		JComboBox comboBox_Sucursales = new JComboBox();
 		comboBox_Sucursales.setBounds(103, 86, 286, 22);
 		panel.add(comboBox_Sucursales);
 		cargarSucursalesEnComboBox(comboBox_Sucursales);
@@ -153,17 +147,17 @@ public class VentanaPrincipal extends JFrame {
 		panel_1.add(btnEliminar);
 		btnEliminar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				borrarCuenta();
+				borrarCuenta(textField_N_Cuenta, joptionpane);
 			}
 		});
 		btnActualizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				actualizarCuenta();
+				actualizarCuenta(textField_N_Cuenta, textField_Saldo, comboBox_Sucursales);
 			}
 		});
 		btnNuevo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				agregarNuevaCuenta();
+				agregarNuevaCuenta(textField_N_Cuenta,textField_Saldo,comboBox_Sucursales,comboBox_Cliente,comboBox_FechaDay,comboBox_FechaMonth,comboBox_FechaYear);
 			}
 		});
 		
@@ -267,16 +261,20 @@ public class VentanaPrincipal extends JFrame {
         }
     }
     
-    private void agregarNuevaCuenta() {
+    private void agregarNuevaCuenta(
+    		JTextField textFieldnCuenta,JTextField textFieldSaldo,JComboBox comboBox_Sucursales,
+    		JComboBox comboBox_Cliente,JComboBox<Integer> comboBox_FechaDay,JComboBox<String> comboBox_FechaMonth,
+    		JComboBox<Integer> comboBox_FechaYear
+    		) {
         try {
             // Obtener el número de cuenta del ComboBox
-            String numeroCuenta = textField_N_Cuenta.getText();
+            String numeroCuenta = textFieldnCuenta.getText();
             String sucursalNombre = comboBox_Sucursales.getSelectedItem().toString();
-            String saldo = textField_Saldo.getText();
+            String saldo = textFieldSaldo.getText();
             String clienteNombre = comboBox_Cliente.getSelectedItem().toString();
-            int dia = (int) comboBox_FechaDay.getSelectedItem();
-            String mes = (String) comboBox_FechaMonth.getSelectedItem();
-            int año = (int) comboBox_FechaYear.getSelectedItem();
+            int dia = Integer.parseInt(comboBox_FechaDay.getSelectedItem().toString());
+            String mes = comboBox_FechaMonth.getSelectedItem().toString();
+            int año = Integer.parseInt(comboBox_FechaYear.getSelectedItem().toString());
 
             // Validar que todos los campos estén completos
             if (numeroCuenta.isEmpty() || sucursalNombre.isEmpty() || saldo.isEmpty() || clienteNombre.isEmpty()) {
@@ -352,7 +350,7 @@ public class VentanaPrincipal extends JFrame {
         }
     }
 
-    private void actualizarCuenta() {
+    private void actualizarCuenta(JTextField textField_N_Cuenta,JTextField textField_Saldo,JComboBox comboBox_Sucursales) {
     try {
         // Obtener el número de cuenta original
         String numeroCuentaOriginal = textField_N_Cuenta.getText();
@@ -430,7 +428,7 @@ public class VentanaPrincipal extends JFrame {
     }
 }
     
-    private void borrarCuenta() {
+    private void borrarCuenta(JTextField textField_N_Cuenta,JOptionPane joptionpane) {
     try {
         // Obtener el número de cuenta original
         String numeroCuentaOriginal = textField_N_Cuenta.getText();
@@ -506,7 +504,7 @@ public class VentanaPrincipal extends JFrame {
             case "Diciembre":
                 return 12;
             default:
-                return 1; // Por defecto, retornar enero en caso de error
+                return 1; 
         }
     }
     

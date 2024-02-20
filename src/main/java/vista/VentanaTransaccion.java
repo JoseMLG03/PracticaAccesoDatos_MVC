@@ -14,12 +14,16 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
+import javax.swing.ButtonGroup;
 
 public class VentanaTransaccion extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private JTextField textField;
+	private JTextField textField_1;
+	private JTextField textField_2;
+	private final ButtonGroup buttonGroup = new ButtonGroup();
 
 	/**
 	 * Launch the application.
@@ -55,22 +59,25 @@ public class VentanaTransaccion extends JFrame {
 		contentPane.add(lblNewLabel);
 		
 		JPanel panel = new JPanel();
-		panel.setBorder(new TitledBorder(null, "JPanel title", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel.setBorder(new TitledBorder(null, "Seleccionar Operacion", TitledBorder.LEADING, TitledBorder.TOP, null, null));
 		panel.setBounds(61, 50, 417, 45);
 		contentPane.add(panel);
 		panel.setLayout(null);
 		
-		JRadioButton rdbtnNewRadioButton = new JRadioButton("New radio button");
-		rdbtnNewRadioButton.setBounds(155, 16, 109, 23);
-		panel.add(rdbtnNewRadioButton);
+		JRadioButton rdbtnReintegro = new JRadioButton("Reintegro");
+		buttonGroup.add(rdbtnReintegro);
+		rdbtnReintegro.setBounds(155, 16, 109, 23);
+		panel.add(rdbtnReintegro);
 		
-		JRadioButton rdbtnNewRadioButton_1 = new JRadioButton("New radio button");
-		rdbtnNewRadioButton_1.setBounds(6, 16, 109, 23);
-		panel.add(rdbtnNewRadioButton_1);
+		JRadioButton rdbtnIngreso = new JRadioButton("Ingreso");
+		buttonGroup.add(rdbtnIngreso);
+		rdbtnIngreso.setBounds(6, 16, 109, 23);
+		panel.add(rdbtnIngreso);
 		
-		JRadioButton rdbtnNewRadioButton_2 = new JRadioButton("New radio button");
-		rdbtnNewRadioButton_2.setBounds(302, 16, 109, 23);
-		panel.add(rdbtnNewRadioButton_2);
+		JRadioButton rdbtnTransferencia = new JRadioButton("Transferencia");
+		buttonGroup.add(rdbtnTransferencia);
+		rdbtnTransferencia.setBounds(302, 16, 109, 23);
+		panel.add(rdbtnTransferencia);
 		
 		
 		
@@ -87,21 +94,51 @@ public class VentanaTransaccion extends JFrame {
 		JComboBox comboBox = new JComboBox();
 		comboBox.setBounds(255, 16, 157, 22);
 		
-		JLabel lblNewLabel_3 = new JLabel("Cantidad:");
-		lblNewLabel_3.setBounds(332, 155, 59, 14);
-		contentPane.add(lblNewLabel_3);
+		JPanel panel_1 = new JPanel();
+		panel_1.setBorder(new TitledBorder(null, "Cliente", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_1.setBounds(10, 119, 515, 50);
+		contentPane.add(panel_1);
+		panel_1.setLayout(null);
 		
-		JComboBox comboBox_1 = new JComboBox();
-		comboBox_1.setBounds(398, 151, 109, 22);
-		contentPane.add(comboBox_1);
+		JLabel lblNewLabel_3 = new JLabel("Cantidad:");
+		lblNewLabel_3.setBounds(392, 20, 59, 14);
+		panel_1.add(lblNewLabel_3);
+		
+		JLabel lblNewLabel_4_1 = new JLabel("Seleccionar Cuenta:");
+		lblNewLabel_4_1.setBounds(148, 20, 120, 14);
+		panel_1.add(lblNewLabel_4_1);
+		
+		JComboBox comboBox_2_1 = new JComboBox();
+		comboBox_2_1.setBounds(273, 16, 109, 22);
+		panel_1.add(comboBox_2_1);
+		
+		textField_1 = new JTextField();
+		textField_1.setBounds(446, 17, 59, 20);
+		panel_1.add(textField_1);
+		textField_1.setColumns(10);
+		
+		JLabel lblNewLabel_5 = new JLabel("DNI:");
+		lblNewLabel_5.setBounds(10, 20, 46, 14);
+		panel_1.add(lblNewLabel_5);
+		
+		textField_2 = new JTextField();
+		textField_2.setBounds(35, 17, 109, 20);
+		panel_1.add(textField_2);
+		textField_2.setColumns(10);
+		
+		JPanel panel_2 = new JPanel();
+		panel_2.setBorder(new TitledBorder(null, "Destinatario", TitledBorder.LEADING, TitledBorder.TOP, null, null));
+		panel_2.setBounds(20, 182, 474, 48);
+		contentPane.add(panel_2);
+		panel_2.setLayout(null);
 		
 		JLabel lblNewLabel_4 = new JLabel("Seleccionar Cuenta Destinatario:");
-		lblNewLabel_4.setBounds(42, 235, 173, 14);
-		contentPane.add(lblNewLabel_4);
+		lblNewLabel_4.setBounds(6, 20, 192, 14);
+		panel_2.add(lblNewLabel_4);
 		
 		JComboBox comboBox_2 = new JComboBox();
-		comboBox_2.setBounds(224, 231, 254, 22);
-		contentPane.add(comboBox_2);
+		comboBox_2.setBounds(200, 16, 253, 22);
+		panel_2.add(comboBox_2);
 		
 		JButton btnSalir = new JButton("Salir");
 		btnSalir.addActionListener(new ActionListener() {
@@ -114,7 +151,11 @@ public class VentanaTransaccion extends JFrame {
 				vp.setVisible(true);
 			}
 		});
-		btnSalir.setBounds(418, 16, 89, 23);
+		btnSalir.setBounds(436, 249, 89, 23);
 		contentPane.add(btnSalir);
+		
+		JButton btnConfirmar = new JButton("Confirmar");
+		btnConfirmar.setBounds(323, 249, 103, 23);
+		contentPane.add(btnConfirmar);
 	}
 }
