@@ -164,9 +164,22 @@ public class VentanaTransaccion extends JFrame {
 		JButton btnConfirmar = new JButton("Confirmar");
 		btnConfirmar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				realizarIngreso(comboBox_2_1,textField_2,textField_1);
-				cuentasySaldo(comboBox_2_1);
-				cuentasySaldo(comboBox_2);
+				if(rdbtnIngreso.isSelected()) {
+					realizarIngreso(comboBox_2_1,textField_2,textField_1);
+					cuentasySaldo(comboBox_2_1);
+					cuentasySaldo(comboBox_2);
+				}
+				if(rdbtnReintegro.isSelected()) {
+					realizarReintegro(comboBox_2_1,textField_2,textField_1);
+					cuentasySaldo(comboBox_2_1);
+					cuentasySaldo(comboBox_2);
+				}
+				if(rdbtnTransferencia.isSelected()) {
+					realizarTransferencia(comboBox_2_1,comboBox_2,textField_1);
+					cuentasySaldo(comboBox_2_1);
+					cuentasySaldo(comboBox_2);
+				}
+				
 			}
 		});
 		btnConfirmar.setBounds(323, 249, 103, 23);
@@ -333,6 +346,75 @@ public class VentanaTransaccion extends JFrame {
 	    } catch (SQLException | NumberFormatException e) {
 	        e.printStackTrace();
 	        JOptionPane.showMessageDialog(this, "Error al realizar el retiro.", "Error", JOptionPane.ERROR_MESSAGE);
+	    }
+	}
+	private void realizarTransferencia(JComboBox comboBoxOrigen, JComboBox comboBoxDestino, JTextField montoField) {
+	    try {
+	        // Obtener los valores ingresados en los campos
+	        String cuentaOrigenStr = comboBoxOrigen.getSelectedItem().toString();
+	        String cuentaDestinoStr = comboBoxDestino.getSelectedItem().toString();
+	        double monto = Double.parseDouble(montoField.getText());
+
+	        // Validar que todos los campos estén completos
+	        if (cuentaOrigenStr.isEmpty() || cuentaDestinoStr.isEmpty() || montoField.getText().isEmpty()) {
+	            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+
+	        // Obtener los IDs de las cuentas origen y destino
+	        String[] partsOrigen = cuentaOrigenStr.split(" ");
+	        int cuentaOrigenID = Integer.parseInt(partsOrigen[2]);
+
+	        String[] partsDestino = cuentaDestinoStr.split(" ");
+	        int cuentaDestinoID = Integer.parseInt(partsDestino[2]);
+
+	        // Conectar a la base de datos
+	        ConexionBD CBD = new ConexionBD("localhost", "3306", "root", "", "bancoVigo");
+	        Connection conn = CBD.getCon();
+
+	        // Verificar si hay suficiente saldo en la cuenta de origen
+	        String saldoQuery = "SELECT CuSaldo FROM cuenta WHERE cuCodCuenta = ?";
+	        PreparedStatement saldoStatement = conn.prepareStatement(saldoQuery);
+	        saldoStatement.setInt(1, cuentaOrigenID);
+	        ResultSet saldoResult = saldoStatement.executeQuery();
+	        saldoResult.next();
+	        double saldoOrigen = saldoResult.getDouble("CuSaldo");
+	        if (saldoOrigen < monto) {
+	            JOptionPane.showMessageDialog(this, "La cuenta de origen no tiene suficiente saldo para realizar esta transacción.", "Error", JOptionPane.ERROR_MESSAGE);
+	            return;
+	        }
+
+	        // Actualizar el saldo de las cuentas en la base de datos
+	        String updateQueryOrigen = "UPDATE cuenta SET CuSaldo = CuSaldo - ? WHERE cuCodCuenta = ?";
+	        PreparedStatement updateStatementOrigen = conn.prepareStatement(updateQueryOrigen);
+	        updateStatementOrigen.setDouble(1, monto);
+	        updateStatementOrigen.setInt(2, cuentaOrigenID);
+	        int rowsAffectedOrigen = updateStatementOrigen.executeUpdate();
+
+	        String updateQueryDestino = "UPDATE cuenta SET CuSaldo = CuSaldo + ? WHERE cuCodCuenta = ?";
+	        PreparedStatement updateStatementDestino = conn.prepareStatement(updateQueryDestino);
+	        updateStatementDestino.setDouble(1, monto);
+	        updateStatementDestino.setInt(2, cuentaDestinoID);
+	        int rowsAffectedDestino = updateStatementDestino.executeUpdate();
+
+	        // Verificar si se realizaron correctamente ambas actualizaciones
+	        if (rowsAffectedOrigen > 0 && rowsAffectedDestino > 0) {
+	            JOptionPane.showMessageDialog(this, "Se ha realizado la transferencia correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+	            // Actualizar las listas de los JComboBox
+	            cuentasySaldo(comboBoxOrigen);
+	            cuentasySaldo(comboBoxDestino);
+	        } else {
+	            JOptionPane.showMessageDialog(this, "No se pudo realizar la transferencia.", "Error", JOptionPane.ERROR_MESSAGE);
+	        }
+
+	        // Cerrar la conexión y las declaraciones
+	        saldoStatement.close();
+	        updateStatementOrigen.close();
+	        updateStatementDestino.close();
+	        conn.close();
+	    } catch (SQLException | NumberFormatException e) {
+	        e.printStackTrace();
+	        JOptionPane.showMessageDialog(this, "Error al realizar la transferencia.", "Error", JOptionPane.ERROR_MESSAGE);
 	    }
 	}
 
