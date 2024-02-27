@@ -22,12 +22,13 @@ import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import javax.swing.border.TitledBorder;
 
+import controlador.Controlador;
 import modelo.ConexionBD;
 
 import javax.swing.ButtonGroup;
 
 public class VentanaTransaccion extends JFrame {
-
+	Controlador controlador;
 	private static final long serialVersionUID = 1L;
 	private JPanel contentPane;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
@@ -39,8 +40,7 @@ public class VentanaTransaccion extends JFrame {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					//VentanaTransaccion frame = new VentanaTransaccion();
-					//frame.setVisible(true);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -52,6 +52,8 @@ public class VentanaTransaccion extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaTransaccion() {
+		controlador = new Controlador();
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 551, 322);
 		contentPane = new JPanel();
@@ -165,19 +167,28 @@ public class VentanaTransaccion extends JFrame {
 		btnConfirmar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(rdbtnIngreso.isSelected()) {
-					realizarIngreso(comboBox_2_1,textField_2,textField_1);
-					cuentasySaldo(comboBox_2_1);
-					cuentasySaldo(comboBox_2);
+					controlador.realizarIngreso(comboBox_2_1,textField_2,textField_1);
+					controlador.cuentasySaldo(comboBox_2_1);
+					controlador.cuentasySaldo(comboBox_2);
+					//realizarIngreso(comboBox_2_1,textField_2,textField_1);
+					//cuentasySaldo(comboBox_2_1);
+					//cuentasySaldo(comboBox_2);
 				}
 				if(rdbtnReintegro.isSelected()) {
-					realizarReintegro(comboBox_2_1,textField_2,textField_1);
-					cuentasySaldo(comboBox_2_1);
-					cuentasySaldo(comboBox_2);
+					controlador.realizarReintegro(comboBox_2_1,textField_2,textField_1);
+					controlador.cuentasySaldo(comboBox_2_1);
+					controlador.cuentasySaldo(comboBox_2);
+					//realizarReintegro(comboBox_2_1,textField_2,textField_1);
+					//cuentasySaldo(comboBox_2_1);
+					//cuentasySaldo(comboBox_2);
 				}
 				if(rdbtnTransferencia.isSelected()) {
-					realizarTransferencia(comboBox_2_1,comboBox_2,textField_1);
-					cuentasySaldo(comboBox_2_1);
-					cuentasySaldo(comboBox_2);
+					controlador.realizarTransferencia(comboBox_2_1,comboBox_2,textField_1);
+					controlador.cuentasySaldo(comboBox_2_1);
+					controlador.cuentasySaldo(comboBox_2);
+					//realizarTransferencia(comboBox_2_1,comboBox_2,textField_1);
+					//cuentasySaldo(comboBox_2_1);
+					//cuentasySaldo(comboBox_2);
 				}
 				
 			}
@@ -185,8 +196,10 @@ public class VentanaTransaccion extends JFrame {
 		btnConfirmar.setBounds(323, 249, 103, 23);
 		contentPane.add(btnConfirmar);
 		
-		cuentasySaldo(comboBox_2_1);
-		cuentasySaldo(comboBox_2);
+		controlador.cuentasySaldo(comboBox_2_1);
+		controlador.cuentasySaldo(comboBox_2);
+		//cuentasySaldo(comboBox_2_1);
+		//cuentasySaldo(comboBox_2);
 		ControladorVisibilidadDestinatario(rdbtnTransferencia,rdbtnReintegro,rdbtnIngreso,comboBox_2);
 		
 		
@@ -210,212 +223,4 @@ public class VentanaTransaccion extends JFrame {
             }
         });
 	}
-	private void cuentasySaldo(JComboBox<String> comboBox) {
-        // Conectar a la base de datos
-        ConexionBD CBD = new ConexionBD("localhost", "3306", "root", "", "bancoVigo");
-        try (Connection conn = CBD.getCon()) {
-            // Consulta para obtener los números de cuenta y los saldos
-            String query = "SELECT cuenta.cuCodCuenta, cuenta.CuSaldo, cliente.clNombre, cliente.clApellido " + 
-                           "FROM cuenta " +
-                           "INNER JOIN cuentascliente ON cuenta.cuCodCuenta = cuentascliente.ccCodCuenta " +
-                           "INNER JOIN cliente ON cuentascliente.ccDNI = cliente.clDni";
-            PreparedStatement statement = conn.prepareStatement(query);
-            ResultSet resultSet = statement.executeQuery();
-
-            // Crear una lista para almacenar los números de cuenta y los saldos concatenados
-            ArrayList<String> cuentasSaldos = new ArrayList<>();
-
-            // Iterar sobre los resultados y concatenar los números de cuenta y los saldos
-            while (resultSet.next()) {
-                int codigoCuenta = resultSet.getInt("cuCodCuenta");
-                double saldo = resultSet.getDouble("CuSaldo");
-                String nombreCliente = resultSet.getString("clNombre");
-                String apellidoCliente = resultSet.getString("clApellido");
-                cuentasSaldos.add("ID cuenta: "+codigoCuenta + " | Cliente: " + nombreCliente + " " + apellidoCliente + " | Saldo: " + saldo +" $");
-            }
-
-            // Convertir la lista en un arreglo
-            String[] cuentasSaldosArray = cuentasSaldos.toArray(new String[0]);
-
-            // Establecer los números de cuenta y los saldos en el comboBox
-            comboBox.removeAllItems();
-            for (String cuentaSaldo : cuentasSaldosArray) {
-                comboBox.addItem(cuentaSaldo);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Error al actualizar los números de cuenta y saldos en el ComboBox.", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-    }
-	private void realizarIngreso(JComboBox comboBox,JTextField DNI,JTextField Saldo) {
-	    try {
-	        // Obtener los valores ingresados en los campos
-	        String dniCliente = DNI.getText();
-	        double cantidad = Double.parseDouble(Saldo.getText());
-	        String cuentaDestino = comboBox.getSelectedItem().toString();
-
-	        // Validar que todos los campos estén completos
-	        if (dniCliente.isEmpty() || Saldo.getText().isEmpty() || cuentaDestino.isEmpty()) {
-	            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-	            return;
-	        }
-
-	        // Conectar a la base de datos
-	        ConexionBD CBD = new ConexionBD("localhost", "3306", "root", "", "bancoVigo");
-	        Connection conn = CBD.getCon();
-
-	        // Obtener el ID de la cuenta destino
-	        String[] parts = cuentaDestino.split(" ");
-	        int cuentaDestinoID = Integer.parseInt(parts[2]);
-
-	        // Actualizar el saldo en la base de datos
-	        String updateQuery = "UPDATE cuenta SET CuSaldo = CuSaldo + ? WHERE cuCodCuenta = ?";
-	        PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
-	        updateStatement.setDouble(1, cantidad);
-	        updateStatement.setInt(2, cuentaDestinoID);
-	        int rowsAffected = updateStatement.executeUpdate();
-
-	        // Verificar si se actualizó correctamente
-	        if (rowsAffected > 0) {
-	            JOptionPane.showMessageDialog(this, "Se ha realizado el ingreso correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-	        } else {
-	            JOptionPane.showMessageDialog(this, "No se pudo realizar el ingreso.", "Error", JOptionPane.ERROR_MESSAGE);
-	        }
-
-	        // Cerrar la conexión y las declaraciones
-	        updateStatement.close();
-	        conn.close();
-	    } catch (SQLException | NumberFormatException e) {
-	        e.printStackTrace();
-	        JOptionPane.showMessageDialog(this, "Error al realizar el ingreso.", "Error", JOptionPane.ERROR_MESSAGE);
-	    }
-	}
-	private void realizarReintegro(JComboBox comboBox, JTextField DNI, JTextField Saldo) {
-	    try {
-	        // Obtener los valores ingresados en los campos
-	        String dniCliente = DNI.getText();
-	        double cantidad = Double.parseDouble(Saldo.getText());
-	        String cuentaDestino = comboBox.getSelectedItem().toString();
-
-	        // Validar que todos los campos estén completos
-	        if (dniCliente.isEmpty() || Saldo.getText().isEmpty() || cuentaDestino.isEmpty()) {
-	            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-	            return;
-	        }
-
-	        // Conectar a la base de datos
-	        ConexionBD CBD = new ConexionBD("localhost", "3306", "root", "", "bancoVigo");
-	        Connection conn = CBD.getCon();
-
-	        // Obtener el ID de la cuenta destino
-	        String[] parts = cuentaDestino.split(" ");
-	        int cuentaDestinoID = Integer.parseInt(parts[2]);
-
-	        // Verificar si hay suficiente saldo en la cuenta
-	        String saldoQuery = "SELECT CuSaldo FROM cuenta WHERE cuCodCuenta = ?";
-	        PreparedStatement saldoStatement = conn.prepareStatement(saldoQuery);
-	        saldoStatement.setInt(1, cuentaDestinoID);
-	        ResultSet saldoResult = saldoStatement.executeQuery();
-	        saldoResult.next();
-	        double saldoActual = saldoResult.getDouble("CuSaldo");
-	        if (saldoActual < cantidad) {
-	            JOptionPane.showMessageDialog(this, "La cuenta no tiene suficiente saldo para realizar esta transacción.", "Error", JOptionPane.ERROR_MESSAGE);
-	            return;
-	        }
-
-	        // Actualizar el saldo en la base de datos
-	        String updateQuery = "UPDATE cuenta SET CuSaldo = CuSaldo - ? WHERE cuCodCuenta = ?";
-	        PreparedStatement updateStatement = conn.prepareStatement(updateQuery);
-	        updateStatement.setDouble(1, cantidad);
-	        updateStatement.setInt(2, cuentaDestinoID);
-	        int rowsAffected = updateStatement.executeUpdate();
-
-	        // Verificar si se actualizó correctamente
-	        if (rowsAffected > 0) {
-	            JOptionPane.showMessageDialog(this, "Se ha realizado el retiro correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-	            // Actualizar la lista del JComboBox
-	            cuentasySaldo(comboBox);
-	        } else {
-	            JOptionPane.showMessageDialog(this, "No se pudo realizar el retiro.", "Error", JOptionPane.ERROR_MESSAGE);
-	        }
-
-	        // Cerrar la conexión y las declaraciones
-	        saldoStatement.close();
-	        updateStatement.close();
-	        conn.close();
-	    } catch (SQLException | NumberFormatException e) {
-	        e.printStackTrace();
-	        JOptionPane.showMessageDialog(this, "Error al realizar el retiro.", "Error", JOptionPane.ERROR_MESSAGE);
-	    }
-	}
-	private void realizarTransferencia(JComboBox comboBoxOrigen, JComboBox comboBoxDestino, JTextField montoField) {
-	    try {
-	        // Obtener los valores ingresados en los campos
-	        String cuentaOrigenStr = comboBoxOrigen.getSelectedItem().toString();
-	        String cuentaDestinoStr = comboBoxDestino.getSelectedItem().toString();
-	        double monto = Double.parseDouble(montoField.getText());
-
-	        // Validar que todos los campos estén completos
-	        if (cuentaOrigenStr.isEmpty() || cuentaDestinoStr.isEmpty() || montoField.getText().isEmpty()) {
-	            JOptionPane.showMessageDialog(this, "Por favor, complete todos los campos.", "Error", JOptionPane.ERROR_MESSAGE);
-	            return;
-	        }
-
-	        // Obtener los IDs de las cuentas origen y destino
-	        String[] partsOrigen = cuentaOrigenStr.split(" ");
-	        int cuentaOrigenID = Integer.parseInt(partsOrigen[2]);
-
-	        String[] partsDestino = cuentaDestinoStr.split(" ");
-	        int cuentaDestinoID = Integer.parseInt(partsDestino[2]);
-
-	        // Conectar a la base de datos
-	        ConexionBD CBD = new ConexionBD("localhost", "3306", "root", "", "bancoVigo");
-	        Connection conn = CBD.getCon();
-
-	        // Verificar si hay suficiente saldo en la cuenta de origen
-	        String saldoQuery = "SELECT CuSaldo FROM cuenta WHERE cuCodCuenta = ?";
-	        PreparedStatement saldoStatement = conn.prepareStatement(saldoQuery);
-	        saldoStatement.setInt(1, cuentaOrigenID);
-	        ResultSet saldoResult = saldoStatement.executeQuery();
-	        saldoResult.next();
-	        double saldoOrigen = saldoResult.getDouble("CuSaldo");
-	        if (saldoOrigen < monto) {
-	            JOptionPane.showMessageDialog(this, "La cuenta de origen no tiene suficiente saldo para realizar esta transacción.", "Error", JOptionPane.ERROR_MESSAGE);
-	            return;
-	        }
-
-	        // Actualizar el saldo de las cuentas en la base de datos
-	        String updateQueryOrigen = "UPDATE cuenta SET CuSaldo = CuSaldo - ? WHERE cuCodCuenta = ?";
-	        PreparedStatement updateStatementOrigen = conn.prepareStatement(updateQueryOrigen);
-	        updateStatementOrigen.setDouble(1, monto);
-	        updateStatementOrigen.setInt(2, cuentaOrigenID);
-	        int rowsAffectedOrigen = updateStatementOrigen.executeUpdate();
-
-	        String updateQueryDestino = "UPDATE cuenta SET CuSaldo = CuSaldo + ? WHERE cuCodCuenta = ?";
-	        PreparedStatement updateStatementDestino = conn.prepareStatement(updateQueryDestino);
-	        updateStatementDestino.setDouble(1, monto);
-	        updateStatementDestino.setInt(2, cuentaDestinoID);
-	        int rowsAffectedDestino = updateStatementDestino.executeUpdate();
-
-	        // Verificar si se realizaron correctamente ambas actualizaciones
-	        if (rowsAffectedOrigen > 0 && rowsAffectedDestino > 0) {
-	            JOptionPane.showMessageDialog(this, "Se ha realizado la transferencia correctamente.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-	            // Actualizar las listas de los JComboBox
-	            cuentasySaldo(comboBoxOrigen);
-	            cuentasySaldo(comboBoxDestino);
-	        } else {
-	            JOptionPane.showMessageDialog(this, "No se pudo realizar la transferencia.", "Error", JOptionPane.ERROR_MESSAGE);
-	        }
-
-	        // Cerrar la conexión y las declaraciones
-	        saldoStatement.close();
-	        updateStatementOrigen.close();
-	        updateStatementDestino.close();
-	        conn.close();
-	    } catch (SQLException | NumberFormatException e) {
-	        e.printStackTrace();
-	        JOptionPane.showMessageDialog(this, "Error al realizar la transferencia.", "Error", JOptionPane.ERROR_MESSAGE);
-	    }
-	}
-
 }

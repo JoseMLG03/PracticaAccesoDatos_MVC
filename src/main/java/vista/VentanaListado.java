@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
 
+import controlador.Controlador;
 import modelo.ConexionBD;
 
 import javax.swing.JLabel;
@@ -28,6 +29,7 @@ import javax.swing.JTable;
 
 public class VentanaListado extends JFrame {
 	private static final long serialVersionUID = 1L;
+	Controlador controlador;
 	//static VentanaListado ventanaListado = new VentanaListado();
 	/**
 	 * Launch the application.
@@ -37,7 +39,6 @@ public class VentanaListado extends JFrame {
 			public void run() {
 				try {
 					
-					//ventanaListado.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -49,6 +50,8 @@ public class VentanaListado extends JFrame {
 	 * Create the frame.
 	 */
 	public VentanaListado() {
+		controlador = new Controlador();
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 536, 396);
 		JPanel contentPane = new JPanel();
@@ -61,11 +64,6 @@ public class VentanaListado extends JFrame {
 		lblNewLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		lblNewLabel.setBounds(210, 11, 104, 36);
 		contentPane.add(lblNewLabel);
-		
-		
-		
-		
-
 	    
 		JLabel lblNewLabel_1 = new JLabel("Seleccionar Cliente:");
 		lblNewLabel_1.setBounds(30, 62, 114, 14);
@@ -97,87 +95,17 @@ public class VentanaListado extends JFrame {
 		JComboBox comboBox = new JComboBox<>();
 	    comboBox.setBounds(154, 58, 260, 22);
 	    contentPane.add(comboBox);
-	    
-	    cargarClientes(comboBox);
+	    controlador.cargarClientesEnComboBox(comboBox);
+	    //cargarClientes(comboBox);
 	    
 		comboBox.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				listarCuentas(comboBox.getSelectedItem().toString(),table);
+				controlador.listarCuentas(comboBox.getSelectedItem().toString(),table);
+				//listarCuentas(comboBox.getSelectedItem().toString(),table);
 			}
 		});
 	}																																																																	
 	
-	public void cargarClientes(JComboBox<String> comboBox) {
-	    try {
-	        modelo.ConexionBD CBD = new modelo.ConexionBD("localhost", "3306", "root", "", "bancoVigo");
-	        
-	        Connection conn = CBD.getCon();
-	        // Query para obtener los clientes
-	        String query = "SELECT clNombre FROM Cliente";
-
-	        // Preparar la declaración SQL
-	        PreparedStatement statement = conn.prepareStatement(query);
-
-	        // Ejecutar la consulta
-	        ResultSet resultSet = statement.executeQuery();
-
-	        // Agregar los clientes al JComboBox
-	        while (resultSet.next()) {
-	            comboBox.addItem(resultSet.getString("clNombre"));
-	        }
-
-	        // Cerrar conexiones
-	        resultSet.close();
-	        statement.close();
-	        conn.close();
-
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	    }
-	}
-	public void listarCuentas(String nombreCliente,JTable table) {
-	    try {
-	        modelo.ConexionBD CBD = new modelo.ConexionBD("localhost", "3306", "root", "", "bancoVigo");
-	        Connection con = CBD.getCon();
-
-	        String query = "SELECT cuCodCuenta, cuCodSucursal, cuFechaCreacion, CuSaldo " +
-	                       "FROM cuenta " +
-	                       "JOIN cuentascliente ON cuenta.cuCodCuenta = cuentascliente.ccCodCuenta " +
-	                       "JOIN cliente ON cuentascliente.ccDNI = cliente.clDni " +
-	                       "WHERE cliente.clNombre = ?";
-
-	        PreparedStatement preparedStatement = con.prepareStatement(query);
-	        preparedStatement.setString(1, nombreCliente); 
-
-	        ResultSet rs = preparedStatement.executeQuery();
-	        ResultSetMetaData rsmd = rs.getMetaData();
-
-	        DefaultTableModel tableModel = new DefaultTableModel();
-
-	        for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-	            tableModel.addColumn(rsmd.getColumnName(i));
-	        }
-
-	        while (rs.next()) {
-	            Object[] rowData = new Object[rsmd.getColumnCount()];
-	            for (int i = 1; i <= rsmd.getColumnCount(); i++) {
-	                try {
-	                    rowData[i - 1] = rs.getObject(i);
-	                } catch (Exception e1) {
-	                    e1.printStackTrace();
-	                }
-	            }
-
-	            tableModel.addRow(rowData);
-	        }
-
-	        table.setModel(tableModel);
-	        tableModel.fireTableDataChanged();
-
-	    } catch (SQLException e1) {
-	        e1.printStackTrace();
-	    }
-	}
 }
 
 
